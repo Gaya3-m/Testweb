@@ -1,38 +1,238 @@
-5 
-org.apache.maven quickstart 1.4
-clean install test
-build 
+git --version
+Displays the installed version of Git on your system.
+Example: git --version might output git version 2.41.0.
 
-maven-archetype-webapp
-servlet-api maven dependency
+git config --global user.name "<Your username>"
+Sets the username for Git commits globally across all repositories.
+Example: git config --global user.name "John Doe".
+
+git config --global user.email "<Your email>" 
+Configures the email address associated with commits globally.
+Example: git config --global user.email "johndoe@example.com".
+
+
+Working Directory and Staging
+git init
+Initializes a new Git repository in the current directory. Creates a .git folder.
+Example: Run this in a project directory to start versioning it.
+
+git status
+Displays the status of the working directory and staging area. Shows changes, untracked files, and the branch status.
+
+git add .
+Stages all changes (new, modified, deleted files) for the next commit.
+Use git add <filename> for specific files.
+
+git commit -m "<Your Message>"
+Creates a snapshot of the staged changes, saving them to the repository.
+Example: git commit -m "Initial commit".
+
+git diff
+Shows the differences between the working directory and the staging area. Highlights modifications line by line.
+
+git help <command>
+Displays detailed help for the specified Git command.
+Example: git help commit.
+
+git reset
+Moves changes from the staging area back to the working directory or undoes commits.
+Example: git reset HEAD <file> unstages a file.
+
+git restore
+Discards changes in the working directory or restores files.
+Example: git restore <file> reverts a file to the last committed state.
+
+
+Branch Management
+git branch <branch_name>
+Creates a new branch.
+Example: git branch feature-xyz.
+
+git branch -a
+Lists all branches, including remote ones.
+
+git branch -d <branch_name>
+Deletes a local branch.
+Example: git branch -d feature-xyz.
+
+git checkout <branch_name>
+Switches to the specified branch.
+Example: git checkout main.
+
+git checkout -b <new_branch>
+Creates and switches to a new branch.
+Example: git checkout -b feature-abc.
+
+git merge <branch_name>
+Merges the specified branch into the current branch.
+Example: git merge feature-xyz.
+
+
+Commit History and Reversion
+
+git log
+Displays the commit history in detail.
+Includes commit hash, author, date, and message.
+
+git log --oneline
+Displays a compact, one-line summary of the commit history.
+
+git revert <commit_hash>
+Creates a new commit that undoes changes from the specified commit.
+Example: git revert abc123.
+
+Remote Repository
+
+git branch -M main
+Renames the default branch to main.
+
+git remote add origin "<your github repo link>"
+Links a local repository to a remote repository.
+Example: git remote add origin https://github.com/user/repo.git.
+
+git push -u origin main
+Pushes the current branch (main) to the remote repository and sets it as the upstream branch.
+
+git pull origin main
+Fetches and merges changes from the main branch of the remote repository into the current branch.
+
+Cloning a Repository
+git clone "<your github repo link>"
+Creates a local copy of a remote repository.
+Example: git clone https://github.com/user/repo.git.
+
+
+
+
+
+
+5 
+//maven java project
+File>New>Other>Maven Project>Next
+
+org.apache.maven quickstart 1.4
+group id com.app.demo
+artifact id sample_maven_java_project
+
+right click on project> Run As>
+-Maven clean install test
+-build 
+goals: clean install test
+-java application
+
+to push this project into github
+create a new repository in github "sampleExampleJava1"
+add .gitignore maven
+go to code and copy git repo URL
+in gitbash, type:
+git clone <URL>: you will get cloning into "folder_name"
+go into that folder: cd folder_name
+eclipse-workspace> select the project you created > copy paste all your files into cloned repo folder
+git add .
+git commit -m "sample maven java"
+git push
+
+
+//maven web project
+File>New>Other>Maven Project>Next
+org.apache.maven 
+give artifact id
+maven-archetype-webapp 1.4
+you can change the data to be displayed in index.jsp
+
+servlet-api maven dependency: add this code in your dependencies in pom.xml
 <dependency>
  <groupId>javax.servlet</groupId>
  <artifactId>servlet-api</artifactId>
  <version>2.5</version>
 </dependency>
 
-clean install package
+right click on project> Run As>
+-Maven clean install test
+-build 
+goals: clean install test
+-run on server > tomcat 9.0 > restart server> ok
+
+to push this project into github
+create a new repository in github "sampleExampleWeb1"
+add .gitignore maven
+go to code and copy git repo URL
+in eclipse, right click on your project, there is an option to show in local terminal> git bash
+
+git init
+git add .
+git commit -m "sample maven web"
+git remote add origin "<your repo URL>"
+git push -u origin master
+
+
 
 6 a
-for build add git url
-specify branch
-Invoke top-level Maven targets
-clean install
-post build archive artifacts **/*
-build other projects: test
+for java: build test
+New Item> FreeStyle project> give name e.g buildjava
+build:
+-description
+-scm: add git url
+-specify branch main or master */main or */master
+-build steps> add build steps> Invoke top-level Maven targets > Maven version : MAVEN_HOME> Goals: clean
+ build steps> add build steps> Invoke top-level Maven targets > Maven version : MAVEN_HOME> Goals: install
+-add post build actions> archive artifacts> **/*
+ add post build actions> build other projects> "<other project name>" eg: testjava (trigger only if build is stable)
+
 create test project 
-copy artifacts: build **/*
-Invoke top-level Maven targets test
-post build archive test artifacts **/*
-create pipeline and run
+New Item> FreeStyle project> give name e.g testjava
+-scm> none
+-build environment> delete workspace before build starts
+-build steps> add build step> copy artifacts: buildjava> stable build only> **/*
+-build steps> add build step> Invoke top level maven targets> Maven version: MVEN_HOME> Goals: test
+-add post build actions> archive artifacts> **/*
+
+create pipeline:
+give name and build pipeline view
+pipeline flow> select buildjava
 
 6 b
-same as above use config poll scm
-deploy war/ear to container **/*.war
-Tomcat 9 
+for web: build test deploy
+New Item> FreeStyle project> give name e.g buildweb
+build:
+-description
+-scm: add git url
+-specify branch main or master */main or */master
+-build triggers: poll scm> * * * * * (at every minute)
+-build steps> add build steps> Invoke top-level Maven targets > Maven version : MAVEN_HOME> Goals: clean
+ build steps> add build steps> Invoke top-level Maven targets > Maven version : MAVEN_HOME> Goals: install
+-add post build actions> archive artifacts> **/*
+ add post build actions> build other projects> "<other project name>" eg: testweb (trigger only if build is stable)
+
+create test project 
+New Item> FreeStyle project> give name e.g testweb
+-scm> none
+-build environment> delete workspace before build starts
+-build steps> add build step> copy artifacts: buildweb> stable build only> **/*
+-build steps> add build step> Invoke top level maven targets> Maven version: MAVEN_HOME> Goals: test
+-add post build actions> archive artifacts> **/*
+ add post build actions> build other projects> "<other project name>" eg: deployweb (trigger only if build is stable)
+
+create deploy project
+New Item> FreeStyle project> give name e.g deployweb
+-scm> none
+-build environment> delete workspace before build starts
+-build steps> add build step> copy artifacts: testweb> stable build only> **/*
+-start your tomcat server
+-add post build actions> deploy war/ear to container> **/*.war> give some context path "sampleMavenWeb"> Containers> Add container>
+Tomcat 9.x> credentials> add> Jenkins
+-Eclipse> servers> tomcat 9.0> tomcat-users.xml: you will have your username and password
 credentials: admin
 Gayathri2609$
-post build archive **/*
+-give tomcat URL
+
+create pipeline:
+give name and build pipeline view
+pipeline flow> select buildweb
+
+tomcat> manager app> context path> to view your file
+go to github> src> index.jsp> make some modifications> tomcat> manager app> context path> to view your file
+
 
 6 c
 pipeline script
@@ -67,62 +267,86 @@ pipeline {
  }
 }
 
+create pipeline:
+New Item> declarativepipeline> Pipeline
+-description
+-pipeline> copy paste the script> build now
+
+configure> build triggers> build periodically> * * * * *
+
+
 docker 7a
+open docker desktop> sign in
+open docker hub> sign in
+
+powershell> run as admin
+
 docker --version
-docker pull hello-world 
-docker run hello-world
+docker pull <image name> 
+docker images
+docker run <image name>
+
 docker ps -a
 docker rm [container-id] 
-docker rmi hello-world 
+docker rmi <image name>
+
 docker pull redis
-docker run --name my-redis -d redis 
+docker run --name <newname> -d redis
+Eg: docker run --name my-redis -d redis 
 docker ps
+
+docker exec -it <newname> redis-cli 
 docker exec -it my-redis redis-cli 
+
 127.0.0.1:6379> SET name "Alice"
 OK
 127.0.0.1:6379> GET name
 "Alice" 
-docker stop my-redis 
-docker start my-redis 
-docker rm my-redis 
+exit 
+
+docker stop <newname> or docker stop<container id>
+docker rm <container name>
 docker rmi redis
 
-cd /c/DockerProjects/Redis 
+Create our own image:
+-Create an empty folder DockerProjects> create another folder (Redis)> create a file (Dockerfile) 
 Dockerfile:
 FROM redis:latest
 CMD ["redis-server"]
 
-docker build -t redisnew .
+-in powershell navigate to the path of docker file
+cd /c/DockerProjects/Redis
+
+docker build -t <name> . 
+eg: docker build -t redisnew .
+docker images 
+
 docker run --name myredisnew -d redisnew
 docker ps
-docker stop myredisnew
+
+docker stop myredisnew 
 docker login
 docker ps -a
- docker commit 0e993d2009a1 budarajumadhurika/redis1
+docker commit <container id> <username>/<newname>
+ eg: docker commit 0e993d2009a1 budarajumadhurika/redis1
 docker images
-docker push budarajumadhurika/redis1
+
+//push into docker hub
+docker push <username>/<newname>
+eg: docker push budarajumadhurika/redis1
 docker rm 0e993d2009a1
 docker rmi budarajumadhurika/redis1
-docker rm 0e993d2009a1
-docker rmi budarajumadhurika/redis1
-docker ps -a
-docker logout
 docker pull budarajumadhurika/redis1
- docker run --name myredis -d budarajumadhurika/redis1
+docker run --name myredis -d budarajumadhurika/redis1
 docker exec -it myredis redis-cli
 SET name "Abcdef"
 GET name
 exit
-docker ps -a
- docker stop myredis
- docker rm 50a6e4a9c326
- docker images
-. docker rmi budarajumadhurika/redis1
 docker logout
 
-7b
+7b modify and push docker image
 docker pull ubuntu 
-docker run -it --name newubuntu -d ubuntu 
+docker run -it --name newubuntu -d ubuntu //to run the container using interactive shell (name=newubuntu) 
 docker ps 
 docker exec -it 885a01bcdbe0 bash 
 git --version 
@@ -130,23 +354,35 @@ apt update
 apt install git -y 
 git --version 
 exit
+
 docker stop 885a01bcdbe0
 docker commit 885a01bcdbe0 budarajumadhurika/newubuntu2024 
 docker images 
 docker login 
 docker push budarajumadhurika/newubuntu2024
-docker logout 
+go to docker hub and check if the image is pushed or not
+
 docker rm 885a01bcdbe0 
 docker rmi budarajumadhurika/newubuntu2024 
+docker logout 
+
 docker pull budarajumadhurika/newubuntu2024 
 docker run --name newubuntu2024 -it budarajumadhurika/newubuntu2024
 git --version 
 exit
+
 docker ps  -a
 docker rm 885a01bcdbe0 
 docker rmi budarajumadhurika/newubuntu2024 
 
-7c
+7c create and push docker image
+open docker desktop> sign in
+open docker hub> sign in
+
+
+Create our own image:
+-Create an empty folder DockerProjects> create another folder (Calc)> create a file (Dockerfile) and create calculator.js
+
 calculator.js
 // calculator.js
 function add(a, b) {
@@ -173,15 +409,19 @@ console.log("Division (10 / 2):", divide(10, 2));
 Dockerfile:
 FROM node:16-alpine
 WORKDIR /app
-COPY calc.js /app
-CMD ["node", "calc.js"]
+COPY calculator.js /app
+CMD ["node", "calculator.js"]
 
-
+//build docker image
+powershell> run as admin
+cd pathToYourFolder
 docker build -t simple-calculator . 
 docker run simple-calculator 
+
 docker login 
 docker tag simple-calculator your-dockerhub-username/simplecalculator
 docker push your-dockerhub-username/simple-calculator 
+
 # List all containers (even stopped ones)
 docker ps -a
 # Remove the container by ID
@@ -190,6 +430,7 @@ docker rm <container-id>
 docker rmi your-dockerhub-username/simple-calculator
 docker pull your-dockerhub-username/simple-calculator
 docker run your-dockerhub-username/simple-calculator 
+
 #List all the containers
 docker ps -a
 #Delete the container by its ID
@@ -202,6 +443,7 @@ docker rmi <image-id>
 docker logout 
 
 7d
+create a folder and give it a name:
 docker-compose.yaml:
 version: '3'
 
@@ -239,6 +481,8 @@ networks:
 volumes:
   db_data:
 
+cd <path>
+go to your folder where dockerfile is present 
 docker-compose up -d 
 Open your web browser.
 Go to http://localhost:8000.
@@ -247,6 +491,7 @@ Site Name.
 Admin Username and Password.
 Email Address. 
 docker-compose stop
+docker ps
 Start Again
 To restart the containers:
 docker-compose start
@@ -255,13 +500,15 @@ To stop and remove everything:
 docker-compose down 
 
 7e
+
 minikube start 
 kubectl create deployment mynginx --image=nginx 
 kubectl get deployments 
-kubectl expose deployment mynginx --type=NodePort --port=80 --
-target-port=80 
+kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80 
 kubectl scale deployment mynginx --replicas=4 
+kubectl get pods
 kubectl port-forward svc/mynginx 8081:80 
+open another powershell
 minikube dashboard
 kubectl delete deployment mynginx
 kubectl delete service mynginx 
@@ -270,49 +517,54 @@ minikube stop
 7f
 docker pull jasonrivers/nagios:latest 
 docker run --name nagiosdemo -p 8888:80 jasonrivers/nagios:latest
-localhost:8888 
+
+go to browser> localhost:8888 
 Login Credentials:
 o Username: nagiosadmin
 o Password: nagios
+
+hosts> localhost> monitor host state information
+
+open another powershell
+docker ps
 docker stop nagiosdemo
 docker rm nagiosdemo 
+docker images
 docker rmi jasonrivers/nagios:latest
 
 8b:
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-1
- SOFTWARE ENGINEERING LAB
-EXERCISE – 8
-TOPIC – 2
-PROJECT DEPLOYMENT IN THE AWS CLOUD USING EC2
-INSTANCE
-In this exercise, we will be:
- Launch a virtual server (EC2 instance) on AWS.
- Install essential tools like Docker, Git, and Nano.
- Create and deploy a simple web application using Docker.
- Access the application online.
- Clean up resources to avoid unnecessary charges.
-Note: At every step take screenshots and save in a document
-Step 1: Log in to AWS and Go to EC2
-In this step, we will log in to our AWS account and access the EC2 service.
-1. Log in to your AWS account.
+Type aws academy login
+select the untitled one
+select student login
+Enter the credentials:
+AWS:
+username: gayathri2609z@gmail.com
+password: Gayathri2609$
+
+click on aws academy learner lab> modules> launch aws academy learner lab> start lab
+
+
+1.Once the radio button turns green, click on aws it will lead to aws management console
 2. On the AWS homepage, click Services, then choose EC2 under Compute.
-Step 2: Launch an EC2 Instance
+Launch an EC2 Instance
 Here, we will set up a virtual server to host our web application.
 1. Click Launch Instance.
 2. Configure the settings as follows:
 o Name: Enter a name like "MyWebServer" to identify your server.
 o Application and OS: Choose Ubuntu (Free Tier Eligible).
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-2
+Architecture: 64 bit x86
 o Instance Type: Select t2.micro (1 CPU, 1 GB RAM).
 o Key Pair: Create a new key pair, download the .pem file, and save it securely.
-o Network: Enable Allow HTTP/HTTPS traffic to make your website
+    -to create a key pair> give name> create key pair> save it into an empty folder
+o Network: Enable Allow SSH/HTTP/HTTPS traffic to make your website
 accessible.
 o Storage: Use the default 8 GB.
+
 3. Click Launch Instance and wait until the status changes to "Running."
+click on checkbox> connect
+
 Step 3: Connect to the EC2 Instance
-In this step, we will connect to our virtual server.
+
 1. Select your instance, click Connect, and copy the SSH command.
 2. Open PowerShell (Windows) or Terminal (Mac/Linux) on your computer.
 3. Navigate to the folder where your .pem file is saved using the cd command.
@@ -327,40 +579,49 @@ sudo apt-get install docker.io
 sudo apt install git
 4. Install Nano for editing files directly on the server:
 sudo apt install nano
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-3
+
 Step 5: Create Your Web Application
 In this step, we will build a simple web page and upload it to GitHub.
-1. On your computer, create a file named index.html and add the following content:
+1. On your computer, create a folder>file named index.html and add the following content:
 <html>
 <head><title>My Webpage</title></head>
 <body><h1>Hello from AWS!</h1></body>
 </html>
 2. Initialize Git in the file's folder:
+right click> open git bash here
 git init
 git add .
 git commit -m "First commit"
 3. Create a GitHub repository, copy its HTTPS URL, and upload your file:
+git branch -M main
 git remote add origin <Your_Repo_URL>
 git push -u origin main
+copy the https path of the git repo and go back to cmd
+
 Step 6: Deploy the Web Application Using Docker
 Here, we will deploy the web application to the EC2 instance.
 1. On the EC2 instance, clone your GitHub repository:
 git clone <Your_Repo_URL>
+ls
+cd folder
+ls
+you should find index.html
+
 2. Create a Dockerfile in the project folder using Nano:
 nano Dockerfile
 Add the following content:
 FROM nginx:alpine
 COPY . /usr/share/nginx/html
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-4
+
 Save the file by pressing Ctrl + O, then Enter, and exit Nano with Ctrl + X.
 3. Build and run the Docker container to serve the web application:
 sudo docker build -t my-web-app .
 sudo docker run -d -p 80:80 my-web-app
+
 Step 7: Access Your Web Application
+go back to your instances 
 In this step, we will view the deployed web page online.
-1. Copy the Public IP Address of your EC2 instance from the AWS console.
+1. Copy the Public IPV4 Address of your EC2 instance from the AWS console.
 2. Paste it into your browser (e.g., http://<Public_IP>).
 3. You’ll see your web page with the message "Hello from AWS!" displayed.
 Step 8: Clean Up
@@ -373,24 +634,7 @@ State, and choosing Terminate Instance.
 
 
 8c:
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-1
- SOFTWARE ENGINEERING LAB
-EXERCISE – 8
-TOPIC – 3
-MAVEN WEB PROJECT DEPLOYMENT IN THE AWS
-CLOUD USING EC2 INSTANCE
-In this exercise, we will be:
- Launch an EC2 instance on AWS.
- Install Docker, Git, and Nano.
- Deploy a Maven web project using Docker and expose it on port 9090.
- Access the application online.
- Clean up resources to avoid unnecessary charges.
-Note:
-1. At every step take screenshots and save in a document.
-2. This guide uses JDK 11, which was used for developing the project. If your
-project was developed with JDK 21, adjust the Dockerfile as instructed in
-Step 5.
+
 Step 1: Launch an EC2 Instance
 In this step, we will set up a virtual server to host our Maven web project.
 1. Log in to AWS: Access your AWS account and navigate to Services > Compute >
@@ -401,11 +645,9 @@ o AMI: Select Ubuntu Server (Free Tier Eligible).
 o Instance Type: Choose t2.micro.
 o Key Pair: Create a key pair or use an existing one. Save the .pem file securely.
 o Network Settings: Enable Allow HTTP/HTTPS traffic.
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-2
 o Storage: Use the default size (8 GB).
 3. Click Launch Instance and wait for the status to change to "Running."
-4. Note down the Public IP Address from the EC2 dashboard.
+4. Note down the Public IPV4 Address from the EC2 dashboard.
 Step 2: Connect to the EC2 Instance
 In this step, we will connect to the server.
 1. Open PowerShell (Windows) or Terminal (Mac/Linux) and navigate to the folder with
@@ -432,6 +674,9 @@ In this step, we will download the Maven project from GitHub.
 1. Go to your GitHub repository, click Code > HTTPS, and copy the URL.
 2. Clone the repository:
 git clone <Your_Repo_URL>
+ls
+cd yourfolder
+ls you will have src, pom.xml, target
 Replace <Your_Repo_URL> with the copied URL.
 Step 5: Create a Dockerfile
 We will create a Dockerfile to containerize the Maven project.
@@ -441,20 +686,10 @@ Replace <Your_Project_Folder> with the folder name.
 2. Open Nano to create the Dockerfile:
 nano Dockerfile
 3. Add the following content based on the JDK version used during development:
-o For JDK 11 (used in this guide):
-FROM tomcat:9-jdk11
-COPY target/*.war /usr/local/tomcat/webapps/
 o For JDK 21:
 FROM tomcat:9-jdk21
 COPY target/*.war /usr/local/tomcat/webapps/
-4. Save and exit Nano: Press Ctrl + O, then Enter, and Ctrl + X.
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-4
-Explanation:
- FROM tomcat:9-jdk11 or FROM tomcat:9-jdk21 specifies the Tomcat base
-image with the appropriate JDK version.
- COPY target/*.war /usr/local/tomcat/webapps/ copies the .war file
-into the webapps directory of Tomcat for deployment.
+
 Step 6: Build and Run the Docker Container
 1. Build the Docker image:
 sudo docker build -t maven-web-project .
@@ -465,8 +700,9 @@ o -p 9090:8080: Maps port 9090 on your instance to port 8080 in the
 container.
 Step 7: Configure Security Group for Port 9090
 We will ensure the EC2 instance allows traffic on port 9090.
-1. In the AWS EC2 dashboard, go to Security and click the Security Group ID.
-2. Add an inbound rule:
+1. In the AWS EC2 dashboard, go to Security Options and click the Security Group ID>security groups.
+2. edit inbound rules:
+Add an inbound rule:
 o Type: Custom TCP
 o Port Range: 9090
 o Source: Anywhere (0.0.0.0/0) or your IP.
@@ -474,9 +710,8 @@ o Source: Anywhere (0.0.0.0/0) or your IP.
 Step 8: Access the Web Application
 We will now test the deployment.
 1. Open a browser and navigate to:
-RKR21 SOFTWARE ENGINEERING LAB CSE/IT/CSM/CSD III/I
-5
-http://<Public_IP>:9090/<Your_Project_Name>
+
+http://<Public_IP>:9090/<Your_Project_Name> <Your_Project_Name> is nothing but your folder in which web project is present
 Replace <Public_IP> with the instance’s public IP and <Your_Project_Name>
 with your Maven project name.
 Step 9: Clean Up
